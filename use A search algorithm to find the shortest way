@@ -1,0 +1,51 @@
+import copy
+def find_shortest_path(grid, start_node, end_node): 
+    if grid == None or start_node == None or end_node == None:
+        return []
+    if start_node == end_node:
+        return []
+    else:
+        process = []
+        meno = []
+        past = {}
+        process.append(grid[start_node.position.x][start_node.position.y])
+        find_path(grid, start_node, end_node, process, meno, past)
+        print(meno)
+        return min(meno, key = len)
+
+
+def nest_level(grid, start_node, end_node, process, meno, past, (a, b)):
+    try:
+        if ((start_node.position.x + a) >= 0 and (start_node.position.y + b) >= 0 and grid[start_node.position.x + a][start_node.position.y + b].passable == True and (grid[start_node.position.x + a][start_node.position.y + b] not in process)):
+            if (start_node.position.x + a == end_node.position.x and start_node.position.y + b == end_node.position.y):
+                meno.append(process + [grid[end_node.position.x][end_node.position.y]])
+                return
+            try:
+                if (a, b) in past[grid[start_node.position.x][start_node.position.y]]:
+                    temple = []
+                    for i in meno:
+                        if i[i.find(process[-1]) + 1] == grid[start_node.position.x + a][start_node.position.y + b]:
+                            temple.append(process + i[i.index(process[-1]) + 1:])
+                    if temple != []:
+                        meno += temple
+                else:
+                     raise error
+            except:
+                now = copy.copy(process)
+                start = copy.deepcopy(start_node)
+                now.append(grid[start_node.position.x + a][start_node.position.y + b])
+                start.position.x += a
+                start.position.y += b
+                find_path(grid, start, end_node, now, meno, past)
+                try:
+                    past[grid[start_node.position.x][start_node.position.y]].append((a, b))
+                except:
+                    past[grid[start_node.position.x][start_node.position.y]] = [(a, b)]
+    except:
+        pass
+
+def find_path(grid, start_node, end_node, process, meno, past):
+    nest_level(grid, start_node, end_node, process, meno, past, (1, 0))
+    nest_level(grid, start_node, end_node, process, meno, past, (0, 1))
+    nest_level(grid, start_node, end_node, process, meno, past, (-1, 0))
+    nest_level(grid, start_node, end_node, process, meno, past, (0, -1))
